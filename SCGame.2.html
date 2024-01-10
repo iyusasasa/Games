@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Click Game</title>
+  <style>
+    body {
+      text-align: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    #score {
+      font-size: 30px;
+      margin-bottom: 20px;
+    }
+    #timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    #buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #clickButton {
+      margin-top: 10px;
+      padding: 200px 100px;
+      font-size: 36px;
+      cursor: pointer;
+    }
+    #resetButton {
+      margin-top: 20px;
+      margin-left: auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #resultMessage {
+      font-size: 75px;
+      color: green;
+      opacity: 0;
+      transition: opacity 1s, color 1s;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple Click Game</h1>
+  <label for="clickCount">Set Click Count:</label>
+  <input type="number" id="clickCount" min="1" max="10000" value="100">
+  <p id="score">Score: <span id="points">0</span></p>
+  <p id="timer">Time: <span id="time">0s</span></p>
+  <div id="buttons">
+    <button id="clickButton" onclick="increaseScore()">Click!</button>
+    <button id="resetButton" onclick="resetGame()">Reset</button>
+  </div>
+  <p id="resultMessage"></p>
+
+  <script>
+    let score = 0;
+    let startTime;
+    let timerInterval;
+    let targetClickCount = 100;
+
+    document.getElementById('clickCount').addEventListener('change', function() {
+      targetClickCount = parseInt(this.value, 10);
+    });
+
+    function increaseScore() {
+      if (!startTime) {
+        startTime = new Date().getTime();
+        updateTimer();
+      }
+
+      if (score < targetClickCount) {
+        score++;
+        document.getElementById('points').innerText = score;
+      }
+
+      if (score === targetClickCount) {
+        clearInterval(timerInterval);
+        document.getElementById('clickButton').disabled = true;
+
+        const resultMessage = document.getElementById('resultMessage');
+        const timeElement = document.getElementById('time');
+        const timeValue = parseFloat(timeElement.innerText);
+        const scorePerTime = (timeValue !== 0) ? (score / timeValue) : 0;
+
+        if (scorePerTime >= 10) {
+          resultMessage.innerText = 'EXCELLENT!';
+        } else if (scorePerTime >= 5) {
+          resultMessage.innerText = 'GREAT!';
+        } else {
+          resultMessage.innerText = 'GOOD!';
+        }
+
+        resultMessage.style.opacity = 1;
+        resultMessage.style.color = 'blue';
+
+        
+      }
+    }
+
+    function updateTimer() {
+      timerInterval = setInterval(function() {
+        const currentTime = new Date().getTime();
+        const elapsedTime = (currentTime - startTime) / 1000; // convert to seconds
+        document.getElementById('time').innerText = elapsedTime.toFixed(2);
+      }, 100);
+    }
+
+    function resetGame() {
+      score = 0;
+      startTime = null;
+      clearInterval(timerInterval);
+      document.getElementById('clickButton').disabled = false;
+      document.getElementById('points').innerText = '0';
+      document.getElementById('time').innerText = '0';
+      document.getElementById('resultMessage').innerText = '';
+    }
+  </script>
+</body>
+</html>
